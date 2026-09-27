@@ -1,0 +1,81 @@
+# ==============================================================================
+# 1. DATI SENSIBILI & PRIVACY (PROTEZIONE CRM / GRAPH DATA)
+# ==============================================================================
+# Esclude tutti i dati della rubrica, backup e file generati dai test
+data/*
+
+# Mantiene la directory 'data/' nel repository Git tracciando solo il .gitkeep
+!data/.gitkeep
+
+# Qualsiasi altro file di backup o export locale
+*.bak
+*.backup
+*.dump
+*.sql
+*.sqlite
+
+# ==============================================================================
+# 2. SEGRETI, CHIAVI API & VARIABILI D'AMBIENTE
+# ==============================================================================
+# File di ambiente contenenti token, credenziali o configurazioni locali
+.env
+.env.*
+!.env.example
+
+# Certificati SSL / TLS e chiavi crittografiche
+*.pem
+*.key
+*.cert
+*.crt
+*.pfx
+*.p12
+
+# ==============================================================================
+# 3. RUNTIME & DIPENDENZE (NODE.JS)
+# ==============================================================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnpm-debug.log*
+
+# ==============================================================================
+# 4. ARTEFATTI DEL SISTEMA OPERATIVO & FILE TEMPORANEI
+# ==============================================================================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Linux / Vim / Nano swap files
+*~
+*.swp
+*.swo
+
+# ==============================================================================
+# 5. CONFIGURAZIONI LOCALI DEGLI IDE & EDITOR
+# ==============================================================================
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# ==============================================================================
+# 6. LOGS, REPORT DI TEST & CACHE RUNTIME
+# ==============================================================================
+logs/
+*.log
+coverage/
+.nyc_output/
+.cache/
+tmp/
+temp/
