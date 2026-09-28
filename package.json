@@ -1,15 +1,23 @@
 {
-  "name": "relationgraph",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "directories": {
-    "test": "tests"
-  },
+  "name": "relationGraph",
+  "version": "1.1.0",
+  "description": "Personal Graph CRM locale-first, privacy-focused con motore a grafo in RAM e proto-interfaccia mobile-responsive.",
+  "main": "src/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node src/index.js",
+    "test": "node src/cli/stressTest.js",
+    "test:light": "node src/cli/ligthTest.js",
+    "test:denso": "node src/cli/flowTest.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
+  "keywords": [
+    "crm",
+    "graph",
+    "local-first",
+    "privacy",
+    "vanilla-js"
+  ],
+  "author": "Taz",
+  "license": "ISC",
+  "dependencies": {},
+  "devDependencies": {}
 }
