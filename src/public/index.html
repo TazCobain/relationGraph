@@ -2,105 +2,194 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Personal Graph CRM</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Graph CRM</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header class="app-header">
-        <div class="logo-area">
-            <h1>🕸️ Graph CRM</h1>
-            <div class="stats-badge">
-                <span id="statNodi">0</span> persone • <span id="statArchi">0</span> connessioni
+    <div class="app-wrapper">
+        <header class="app-header">
+            <div class="header-title">
+                <h1>🕸️ Graph CRM</h1>
+                <span class="stats" id="statsDisplay">0 Nodi</span>
             </div>
-        </div>
-        <div class="search-bar">
-            <input type="text" id="searchInput" placeholder="Cerca per nome, #tag, ruolo o email...">
-        </div>
-    </header>
+        </header>
 
-    <div class="main-layout">
-        <!-- Pannello Sinistro: Creazione Contatto -->
-        <aside class="panel left-panel">
-            <h2>Nuovo Contatto</h2>
-            <form id="formContatto">
-                <div class="form-group row">
-                    <input type="text" id="nome" placeholder="Nome" required>
-                    <input type="text" id="cognome" placeholder="Cognome">
-                </div>
-                <div class="form-group row">
-                    <input type="text" id="soprannome" placeholder="Soprannome (opz.)">
-                    <input type="text" id="ruolo" placeholder="Ruolo / Lavoro">
-                </div>
-                <div class="form-group">
-                    <input type="email" id="email" placeholder="Email (identificatore univoco)">
-                </div>
-                <div class="form-group">
-                    <input type="tel" id="telefono" placeholder="Numero di Telefono">
-                </div>
-                <div class="form-group">
-                    <input type="text" id="tags" placeholder="Tags separati da virgola (es: tech, trieste)">
-                </div>
-                <button type="submit" id="btnSalva" class="btn primary">Salva nel Grafo</button>
-            </form>
-        </aside>
-
-        <!-- Sezione Centrale: Griglia Contatti -->
-        <section class="panel center-panel">
-            <div class="panel-header">
-                <h2>Elenco Contatti <span class="counter" id="counterDisplay">(0)</span></h2>
-            </div>
-            <div id="contactGrid" class="cards-grid">
-                <!-- Inserite dinamicamente da app.js -->
-            </div>
-        </section>
-
-        <!-- Pannello Destro: Dettaglio & Rete Relazionale -->
-        <aside class="panel right-panel" id="detailPanel">
-            <div class="empty-state" id="detailEmpty">
-                Seleziona un contatto per esplorare le sue connessioni nel grafo.
-            </div>
-            <div class="detail-content hidden" id="detailContent">
-                <div class="detail-header">
-                    <h2 id="detNome">Nome Cognome</h2>
-                    <span id="detRuolo" class="subtext">Ruolo</span>
+        <main class="app-main">
+            <!-- VISTA 1: LISTA CONTATTI -->
+            <section id="view-lista" class="view active">
+                <div class="master-pane">
+                    <div class="search-container">
+                        <input type="text" id="searchInput" placeholder="Cerca nome, #tag, ruolo..." autocomplete="off">
+                    </div>
+                    <div id="contactGrid" class="cards-list"></div>
                 </div>
 
-                <div class="detail-section">
-                    <h4>Tags</h4>
-                    <div id="detTags" class="tag-cloud"></div>
-                </div>
+                <!-- Dettaglio Contatto -->
+                <div id="detailPane" class="detail-pane">
+                    <div class="detail-header-nav">
+                        <button id="btnBack" class="icon-btn">⬅ Indietro</button>
+                        <button id="btnEliminaContatto" class="icon-btn danger">🗑️ Elimina</button>
+                    </div>
+                    
+                    <div id="detailEmpty" class="empty-state">
+                        <div class="empty-icon">👈</div>
+                        <p>Seleziona un contatto per esplorare il grafo</p>
+                    </div>
 
-                <div class="detail-section">
-                    <h4>Contatti</h4>
-                    <div id="detContatti" class="contact-methods"></div>
+                    <div id="detailContent" class="detail-content hidden">
+                        <div class="profile-header">
+                            <div class="avatar-large" id="detAvatar">?</div>
+                            <h2 id="detNome">Nome</h2>
+                            <span id="detRuolo" class="ruolo-text">Ruolo</span>
+                        </div>
+                        <div class="info-card">
+                            <h3>🏷️ Tags</h3>
+                            <div id="detTags" class="tag-cloud"></div>
+                        </div>
+                        <div class="info-card">
+                            <h3>📞 Recapiti</h3>
+                            <div id="detContatti" class="contact-methods"></div>
+                        </div>
+                        <div class="info-card">
+                            <h3 id="detRelazioniTitle">🔗 Connessioni</h3>
+                            <div id="detVicini" class="relazioni-list"></div>
+                        </div>
+                        <div class="info-card">
+                            <h3>📝 Note</h3>
+                            <p id="detNote" style="font-size: 0.85rem; color: var(--text-muted);"></p>
+                        </div>
+                    </div>
                 </div>
+            </section>
 
-                <div class="detail-section">
-                    <h4 id="detRelazioniTitle">Connessioni Dirette (0)</h4>
-                    <div id="detVicini" class="relazioni-list"></div>
-                </div>
+            <!-- VISTA 2: AGGIUNGI CONTATTO AVANZATO -->
+            <section id="view-aggiungi" class="view">
+                <div class="form-container">
+                    <div class="form-header-title">
+                        <h2>Nuovo Nodo</h2>
+                        <p class="subtitle">Popola il tuo grafo personale.</p>
+                    </div>
+                    
+                    <form id="formContatto">
+                        
+                        <!-- SEZIONE 1: ANAGRAFICA -->
+                        <div class="form-section">
+                            <h3>👤 Anagrafica</h3>
+                            <div class="input-group row">
+                                <input type="text" id="nome" placeholder="Nome">
+                                <input type="text" id="cognome" placeholder="Cognome">
+                            </div>
+                            <div class="input-group row">
+                                <input type="text" id="soprannome" placeholder="Soprannome">
+                                <input type="date" id="data_nascita" title="Data di nascita">
+                            </div>
+                            <small class="hint-text">* Inserisci almeno Nome o Soprannome</small>
+                        </div>
 
-                <div class="detail-actions">
-                    <button id="btnEliminaContatto" class="btn danger">Elimina Contatto</button>
+                        <!-- SEZIONE 2: CARATTERIZZAZIONE -->
+                        <div class="form-section">
+                            <h3>💼 Caratterizzazione</h3>
+                            <div class="input-group">
+                                <input type="text" id="ruolo" placeholder="Professione / Ruolo">
+                            </div>
+                            <div class="input-group row">
+                                <input type="text" id="azienda" placeholder="Azienda / Organizzazione">
+                                <input type="text" id="titolo_studio" placeholder="Titolo di Studio">
+                            </div>
+                            <div class="input-group">
+                                <input type="text" id="tags" placeholder="Tags separati da virgola (es. tech, milano)">
+                            </div>
+                        </div>
+
+                        <!-- SEZIONE 3: RECAPITI MULTIPLI -->
+                        <div class="form-section">
+                            <h3>📞 Recapiti</h3>
+                            
+                            <div class="dynamic-list-container">
+                                <label>Telefoni</label>
+                                <div id="container-telefoni"></div>
+                                <button type="button" class="btn-text" onclick="aggiungiRiga('telefoni')">+ Aggiungi Telefono</button>
+                            </div>
+
+                            <div class="dynamic-list-container">
+                                <label>Email</label>
+                                <div id="container-emails"></div>
+                                <button type="button" class="btn-text" onclick="aggiungiRiga('emails')">+ Aggiungi Email</button>
+                            </div>
+
+                            <div class="dynamic-list-container">
+                                <label>Social / Siti Web</label>
+                                <div id="container-socials"></div>
+                                <button type="button" class="btn-text" onclick="aggiungiRiga('socials')">+ Aggiungi Social</button>
+                            </div>
+                        </div>
+
+                        <!-- SEZIONE 4: COLLEGAMENTI AL GRAFO -->
+                        <div class="form-section highlight-section">
+                            <h3>🔗 Connessioni al Grafo</h3>
+                            <p class="hint-text mb-1">Chi conosce questa persona?</p>
+                            <div id="connessioni-scelte" class="tag-cloud mb-1">
+                                <!-- Chips delle connessioni appariranno qui -->
+                            </div>
+                            <button type="button" class="btn-secondary" id="btnApriMiniRubrica">
+                                🔍 Cerca e Connetti...
+                            </button>
+                        </div>
+
+                        <!-- SEZIONE 5: NOTE -->
+                        <div class="form-section">
+                            <h3>📝 Note Aggiuntive</h3>
+                            <textarea id="note_aggiuntive" rows="3" placeholder="Informazioni extra, dove vi siete conosciuti, ecc..."></textarea>
+                        </div>
+
+                        <button type="submit" class="btn-primary large mt-2">Salva nel Grafo</button>
+                    </form>
                 </div>
-            </div>
-        </aside>
+            </section>
+        </main>
+
+        <!-- Navigazione Bottom / Side -->
+        <nav class="app-nav">
+            <button class="nav-btn active" data-target="lista">
+                <span class="icon">👥</span><span class="label">Rubrica</span>
+            </button>
+            <button class="nav-btn" data-target="aggiungi">
+                <span class="icon">➕</span><span class="label">Nuovo</span>
+            </button>
+        </nav>
     </div>
 
-    <!-- Modale Deduplicazione (Fuzzy Matching Alert) -->
-    <div id="modalDuplicati" class="modal-backdrop hidden">
-        <div class="modal-box">
-            <div class="modal-title">
-                <h3>⚠️ Possibile Omonimia o Duplicato</h3>
-                <p>Il motore euristico ha trovato profili fortemente compatibili:</p>
+    <!-- MODALE 1: SCELTA CONNESSIONI (Mini-Rubrica) -->
+    <div id="modalConnessioni" class="modal-backdrop hidden">
+        <div class="modal-bottom-sheet tall">
+            <div class="modal-header">
+                <h3>🔗 Seleziona Connessioni</h3>
+                <button class="icon-btn close-btn" id="btnChiudiMiniRubrica">✕</button>
             </div>
-            <div id="listaCandidati" class="candidate-container">
-                <!-- Popolato da app.js -->
+            <div class="search-container sticky">
+                <input type="text" id="cercaConnessioni" placeholder="Cerca persona da connettere..." autocomplete="off">
+            </div>
+            <div id="listaMiniRubrica" class="candidate-container expanded">
+                <!-- Wildcards/Mini-card caricate via JS -->
             </div>
             <div class="modal-footer">
-                <button id="btnForzaCreazione" class="btn secondary">Ignora e crea nuovo nodo</button>
-                <button id="btnAnnullaModal" class="btn ghost">Annulla</button>
+                <button type="button" id="btnConfermaConnessioni" class="btn-primary">Conferma Selezionati</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODALE 2: DEDUPLICAZIONE -->
+    <div id="modalDuplicati" class="modal-backdrop hidden">
+        <div class="modal-bottom-sheet">
+            <div class="modal-header">
+                <h3>⚠️ Possibile Duplicato</h3>
+                <p>Profili simili già presenti nel grafo:</p>
+            </div>
+            <div id="listaCandidati" class="candidate-container"></div>
+            <div class="modal-footer">
+                <button id="btnForzaCreazione" class="btn-secondary">Crea Nuovo (Forza)</button>
+                <button id="btnAnnullaModal" class="btn-ghost">Annulla</button>
             </div>
         </div>
     </div>
